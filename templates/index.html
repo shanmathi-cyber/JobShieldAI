@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fake Job Scam Detector</title>
+</head>
+<body>
+
+    <h1>Fake Job Scam Detection System</h1>
+
+    <form method="POST" action="/scan">
+        <textarea name="job_text" rows="10" cols="60"
+        placeholder="Paste job description here..."></textarea>
+        <br><br>
+        <button type="submit">Scan</button>
+    </form>
+
+    {% if risk_level %}
+        <h2>Result:</h2>
+        <p><strong>Risk Level:</strong> {{ risk_level }}</p>
+        <p><strong>Score:</strong> {{ score }}</p>
+
+        <h3>Reasons:</h3>
+        <ul>
+        {% for r in reasons %}
+            <li>{{ r }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+
+</body>
+</html>
