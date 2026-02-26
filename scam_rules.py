@@ -7,26 +7,63 @@ def load_keywords():
 suspicious_keywords = load_keywords()
 
 def calculate_risk(text):
-    score = 0
-    reasons = []
     text = text.lower()
+    risk = 0
+    reasons = []
 
-    for keyword in suspicious_keywords:
-        if keyword in text:
-            score += 1
-            reasons.append(f"Keyword detected: {keyword}")
+    # -------------------------
+    # SCAM INDICATORS
+    # -------------------------
 
-    if "security deposit" in text:
-        score += 3    
-        reasons.append("Suspicious phone number detected")
+    # Fee request (only if asking to pay)
+    if re.search(r"pay\s+(rs\.?|₹|\d+)", text):
+        risk += 35
+        reasons.append("Payment requested")
 
-    return score, reasons
+    if "registration fee" in text or "processing fee" in text:
+        if not re.search(r"(no|not|without)\s+(any\s+)?(registration|processing)\s+fee", text):
+            risk += 25
+            reasons.append("Registration fee requested")
 
+    # No interview
+    if "no interview" in text or "without interview" in text:
+        risk += 20
+        reasons.append("No proper interview process")
 
-def classify_risk(score):
-    if score >= 5:
-        return "HIGH"
-    elif score >= 3:
-        return "MEDIUM"
-    else:
-        return "LOW"
+    # WhatsApp only
+    if "whatsapp only" in text or "contact only on whatsapp" in text:
+        risk += 20
+        reasons.append("WhatsApp only communication")
+
+    # Work from home + high earning combo
+    if "work from home" in text and re.search(r"earn|salary|income", text):
+        risk += 15
+        reasons.append("Work from home earning pattern")
+
+    # Urgency pressure
+    if "limited vacancies" in text or "urgent joining" in text:
+        risk += 10
+        reasons.append("Creates urgency pressure")
+
+    # -------------------------
+    # GENUINE INDICATORS (reduce risk)
+    # -------------------------
+
+    if re.search(r"\b(interview scheduled|google meet|zoom meeting)\b", text):
+        risk -= 25
+
+    if re.search(r"\b(no fee|do not charge|not charge any fee)\b", text):
+        risk -= 30
+
+    if re.search(r"\b(www\.\w+\.com)\b", text):
+        risk -= 10
+
+    if re.search(r"\b(hr@|careers@)\w+\.com\b", text):
+        risk -= 15
+
+    # -------------------------
+    # Normalize score
+    # -------------------------
+    risk = max(0, min(risk, 100))
+
+    return risk, reasons

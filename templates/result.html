@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Scan Result | JobShield AI</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+.result-card {
+    width: 600px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    box-shadow: 0 0 40px rgba(0,255,255,0.2);
+    border: 1px solid rgba(0,255,255,0.3);
+}
+.result-card h1 {
+    font-family: 'Orbitron', sans-serif;
+    color: #00f2ff;
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+.risk-badge {
+    display: inline-block;
+    padding: 10px 25px;
+    border-radius: 50px;
+    font-weight: bold;
+    color: white;
+    margin: 15px 0;
+}
+.threat-text {
+    margin-top: 10px;
+    font-weight: 500;
+    color: #fff;
+}
+.progress-container {
+    background: rgba(255,255,255,0.1);
+    border-radius: 50px;
+    overflow: hidden;
+    margin: 20px 0 30px 0;
+}
+.progress-bar {
+    height: 15px;
+    transition: width 1s ease-in-out;
+}
+.section-title {
+    font-family: 'Orbitron', sans-serif;
+    color: #00f2ff;
+    margin-top: 25px;
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+.reason, .advice {
+    text-align: left;
+    margin: 8px 0;
+    color: #fff;
+}
+.reason i {
+    color: #ff004f;
+    margin-right: 8px;
+}
+.advice i {
+    color: #00ff99;
+    margin-right: 8px;
+}
+.scan-btn {
+    margin-top: 25px;
+    padding: 12px 30px;
+    border-radius: 50px;
+    border: none;
+    font-size: 15px;
+    font-weight: 500;
+    background: linear-gradient(90deg, #00f2ff, #00ff99);
+    color: #000;
+    cursor: pointer;
+    transition: 0.3s ease;
+    box-shadow: 0 0 20px rgba(0,255,255,0.4);
+}
+.scan-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(0,255,255,0.8);
+}
+</style>
+</head>
+<body>
+
+<div class="result-card">
+
+    <h1><i class="fa-solid fa-magnifying-glass"></i> Scan Result</h1>
+
+    <!-- Dynamic Badge -->
+    <div class="risk-badge"
+        style="
+        background:
+        {% if status == 'SAFE' %}#00ff99
+        {% elif status == 'SUSPICIOUS' %}#ff9900
+        {% else %}#ff004f{% endif %};
+        box-shadow: 0 0 20px
+        {% if status == 'SAFE' %}rgba(0,255,153,0.6)
+        {% elif status == 'SUSPICIOUS' %}rgba(255,153,0,0.6)
+        {% else %}rgba(255,0,79,0.6){% endif %};
+        ">
+        <i class="fa-solid fa-triangle-exclamation"></i> {{ status }}
+    </div>
+
+    <div class="threat-text">Threat Level: {{ threat_score }}%</div>
+
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-bar"
+            style="
+            width: {{ threat_score }}%;
+            background:
+            {% if status == 'SAFE' %}#00ff99
+            {% elif status == 'SUSPICIOUS' %}#ff9900
+            {% else %}linear-gradient(90deg, #ff004f, #ff7a00){% endif %};
+            ">
+        </div>
+    </div>
+
+    {% if reasons %}
+    <div class="section-title">
+        <i class="fa-solid fa-bug"></i> Reasons Detected
+    </div>
+
+    {% for reason in reasons %}
+    <div class="reason">
+        <i class="fa-solid fa-circle-exclamation"></i> {{ reason }}
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    {% if advice %}
+    <div class="section-title">
+        <i class="fa-solid fa-shield-halved"></i> Security Advice
+    </div>
+
+    {% for adv in advice %}
+    <div class="advice">
+        <i class="fa-solid fa-check"></i> {{ adv }}
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <button class="scan-btn" onclick="window.location.href='/'">
+        <i class="fa-solid fa-rotate"></i> Scan Another Message
+    </button>
+
+</div>
+
+</body>
+</html>
